@@ -1,0 +1,252 @@
+{
+  "models": {
+    "text": {
+      "originalFile": "text.onnx",
+      "quantizedOperators": 175,
+      "blockSize": 32,
+      "file": "text-compact-v2.onnx",
+      "bytes": 1483169,
+      "externalData": [
+        {
+          "file": "text-compact-v2.data",
+          "bytes": 283789304
+        }
+      ]
+    },
+    "dit": {
+      "originalFile": "dit-cfg-minmax.onnx",
+      "quantizedOperators": 284,
+      "blockSize": 32,
+      "file": "dit-compact-v2.onnx",
+      "bytes": 2021589,
+      "externalData": [
+        {
+          "file": "dit-compact-v2.data",
+          "bytes": 349719552
+        }
+      ]
+    },
+    "background": {
+      "file": "background-compact-v2.onnx",
+      "bytes": 9368549,
+      "padding_implementation": "FP32 padding with FP16 surrounding tensors",
+      "source": "studioludens/birefnet-lite-512",
+      "license": "MIT",
+      "revision": "962e67969ec6acec9c19fab76acee4f5e22e990c",
+      "originalFile": "background-birefnet-pad-f32.onnx",
+      "externalData": [
+        {
+          "file": "background-compact-v2.data",
+          "bytes": 89147412
+        }
+      ]
+    },
+    "vae": {
+      "originalFile": "vae.onnx",
+      "quantizedOperators": 54,
+      "blockSize": 32,
+      "file": "vae-q4-compact-v1.onnx",
+      "bytes": 436220,
+      "externalData": [
+        {
+          "file": "vae-q4-compact-v1.data",
+          "bytes": 145472256
+        }
+      ],
+      "reconstructionChecks": [
+        {
+          "scale": 0.2,
+          "meanAbsolutePixelError": 0.0045670573599636555,
+          "psnrDb": 43.80862808227539
+        },
+        {
+          "scale": 1,
+          "meanAbsolutePixelError": 0.006430492270737886,
+          "psnrDb": 40.00187301635742
+        },
+        {
+          "scale": 2,
+          "meanAbsolutePixelError": 0.004574492108076811,
+          "psnrDb": 42.37965393066406
+        }
+      ]
+    }
+  },
+  "model": "Amshaker/Mobile-O-0.5B",
+  "source_revision": "92b5ef6a90a770c631153c3c32be0bbe049e2a8d",
+  "precision": "INT4 constant matrix/embedding weights in text, diffusion and decoder; FP16 remaining weights and activations; original FP32 attention",
+  "scheduler": {
+    "timesteps": [
+      999,
+      954,
+      899,
+      832,
+      749,
+      642,
+      499,
+      299
+    ],
+    "coefficients": [
+      [
+        1.0,
+        -0.04546833410859108,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.9999999403953552,
+        -0.040838487446308136,
+        -0.059188179671764374,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.9999999403953552,
+        -0.040719173848629,
+        -0.03612334281206131,
+        -0.089861199259758,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.9999999403953552,
+        -0.04071398079395294,
+        -0.03511963412165642,
+        -0.054622165858745575,
+        -0.11958590149879456,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.9999998807907104,
+        -0.040713608264923096,
+        -0.035047873854637146,
+        -0.052102696150541306,
+        -0.06858199834823608,
+        -0.16073065996170044,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.9999998807907104,
+        -0.040713559836149216,
+        -0.035038694739341736,
+        -0.05178036540746689,
+        -0.0620567686855793,
+        -0.08538997918367386,
+        -0.22502052783966064,
+        0.0,
+        0.0
+      ],
+      [
+        0.9999998807907104,
+        -0.04071354866027832,
+        -0.03503604605793953,
+        -0.05168739706277847,
+        -0.06017473340034485,
+        -0.06365986913442612,
+        -0.10461210459470749,
+        -0.34402281045913696,
+        0.0
+      ],
+      [
+        0.9999998807907104,
+        -0.04071354866027832,
+        -0.03503604605793953,
+        -0.05168739706277847,
+        -0.06017473340034485,
+        -0.06365986913442612,
+        -0.10461210459470749,
+        -0.34402281045913696,
+        -0.29975995421409607
+      ]
+    ]
+  },
+  "guidance": 1.5,
+  "latent_shape": [
+    1,
+    32,
+    16,
+    16
+  ],
+  "resolution": 512,
+  "tokenizer_check": {
+    "text": "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\nPlease generate image based on the following caption: A single slipper, 2D side view, flat cartoon game sprite, centered, fully visible, plain white background, no shadow, no text.<|im_end|>\n<|im_start|>assistant\n",
+    "ids": [
+      151644,
+      8948,
+      198,
+      2610,
+      525,
+      264,
+      10950,
+      17847,
+      13,
+      151645,
+      198,
+      151644,
+      872,
+      198,
+      5501,
+      6923,
+      2168,
+      3118,
+      389,
+      279,
+      2701,
+      17256,
+      25,
+      362,
+      3175,
+      21134,
+      712,
+      11,
+      220,
+      17,
+      35,
+      3108,
+      1651,
+      11,
+      10063,
+      30349,
+      1809,
+      17051,
+      11,
+      30188,
+      11,
+      7225,
+      9434,
+      11,
+      14396,
+      4158,
+      4004,
+      11,
+      902,
+      12455,
+      11,
+      902,
+      1467,
+      13,
+      151645,
+      198,
+      151644,
+      77091,
+      198
+    ]
+  }
+}

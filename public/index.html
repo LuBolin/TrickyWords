@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Generate strange objects and balance them into a tower. A local browser physics game.">
+  <title>Tricky Words · Build a tower</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="game.css">
+</head>
+<body>
+  <main>
+    <header class="game-header"><a class="wordmark" href="./" aria-label="Tricky Words home"><span class="stack-mark" aria-hidden="true"><i></i><i></i><i></i></span>TRICKY WORDS</a><span class="eyebrow">BROWSER PLAYTEST</span></header>
+    <section class="game-intro"><h1>A very unstable vocabulary.</h1><p>Name an object. Find its balance. Build a taller tower.</p></section>
+    <section id="startup" class="startup" aria-label="Starting the game" aria-busy="true">
+      <div class="startup-row"><span id="startup-spinner" class="startup-spinner" aria-hidden="true"></span><strong id="startup-stage" role="status">Loading game code…</strong><span id="startup-time" aria-live="off">0.0 s elapsed</span></div>
+      <progress id="startup-progress" aria-label="Startup in progress"></progress>
+      <span id="startup-step">Preparing startup checks</span><p id="startup-note">Preparing the game and checking this device.</p>
+      <button id="startup-retry" type="button" class="secondary" hidden>Retry startup</button>
+    </section>
+    <div class="game-layout">
+      <section aria-label="Tower game">
+        <div class="stage">
+          <div class="game-hud"><div><span class="eyebrow">HEIGHT</span><strong id="tower-height">0.00 m</strong></div><div><span class="eyebrow">STACKED</span><strong id="tower-count">0</strong></div><div><span class="eyebrow">PERSONAL BEST</span><strong id="tower-best">0.00 m</strong></div></div>
+          <div class="game-view">
+            <canvas id="tower" width="480" height="880" tabindex="0" role="img" aria-label="Tower game. No round started." aria-describedby="game-keys"></canvas>
+            <div id="intro-overlay" class="stage-overlay"><div class="stage-panel"><p class="eyebrow">BALANCE THE UNLIKELY</p><h2>How high<br>can you go?</h2><p id="intro-copy">Choose your downloaded model folder, then load the AI to begin.</p><button id="start-game" type="button" disabled>Choose model folder</button></div></div>
+            <div id="pause-overlay" class="stage-overlay" hidden><div class="stage-panel"><h2 id="pause-title">Paused.</h2><p id="pause-copy">Your tower can wait.</p><button id="resume-game">Resume game</button></div></div>
+            <div id="over-overlay" class="stage-overlay" hidden><div class="stage-panel"><p class="eyebrow">GRAVITY WINS</p><h2>Tower down.</h2><p id="round-result"></p><button id="play-again">Build another tower</button></div></div>
+          </div>
+          <p id="game-status" class="game-message" role="status">Choose your model folder to begin.</p>
+        </div>
+        <div class="game-controls" role="group" aria-label="Object controls"><button id="move-left" class="secondary" aria-label="Move object left" disabled>←</button><button id="move-right" class="secondary" aria-label="Move object right" disabled>→</button><button id="rotate-left" class="secondary" aria-label="Rotate object left" disabled>↶</button><button id="rotate-right" class="secondary" aria-label="Rotate object right" disabled>↷</button><button id="drop" disabled>Drop object ↓</button></div>
+        <p id="game-keys" class="game-keys">Mouse moves · Scroll rotates · Left click drops<br>A / D Move · Q / E Rotate · S / Space Drop · P Pause</p>
+        <div class="game-actions"><label class="check-label"><input id="show-collisions" type="checkbox"> Show collision shapes</label><button id="pause-game" class="secondary" disabled>Pause</button><button id="restart-game" class="secondary" disabled>Restart</button></div>
+      </section>
+      <aside class="game-sidebar" aria-label="Next object and AI generation">
+        <section class="next-object"><div class="next-heading"><p class="eyebrow">YOUR NEXT OBJECT</p><span id="turn-state">Ready</span></div><h2 id="next-name">Your first word</h2><canvas id="next-preview" width="256" height="256" aria-label="Next object preview" hidden></canvas><p id="mode-note" class="mode-note">Every piece starts with your word.</p></section>
+        <section class="ai-controls" aria-label="Generate your own objects"><p class="eyebrow">MAKE YOUR OWN</p>
+          <div class="model-picker"><label for="model-folder">Downloaded model folder</label><p id="model-folder-help" class="small">Unzip the Tricky Words model pack, then choose its folder. Files stay on this device. Choose the folder again after reopening the page.</p><input id="model-folder" type="file" webkitdirectory multiple disabled aria-describedby="model-folder-help model-folder-status model-folder-error"><p id="model-folder-status" class="small" role="status">No folder selected.</p><p id="model-folder-error" class="error" role="alert" hidden></p><button id="prepare" type="button" class="secondary" disabled>Load AI models</button></div>
+          <form id="form">
+            <div class="field"><label for="word">Object word</label><div class="word-entry"><input id="word" placeholder="Name an object" maxlength="32" required autocomplete="off" spellcheck="false" aria-describedby="word-help word-error"><button id="generate" type="submit" disabled>Make object</button></div><p id="word-error" class="error" role="alert" hidden></p></div>
+            <fieldset class="word-rules"><legend>Word rules</legend><label class="check-label"><input id="single-word" type="checkbox" checked> One word, letters only</label><label class="check-label"><input id="no-repeat" type="checkbox" checked> No repeats this round</label><p id="word-help" class="small">Rules apply to AI words. Repeats ignore capitalization. Words reset between rounds.</p></fieldset>
+            <div class="field seed"><label for="seed">Seed</label><input id="seed" type="number" value="12345" min="0" max="4294967295" step="1" required></div>
+          </form>
+          <p id="load-note" class="small">Checking this device before loading AI models.</p><p id="result-status" class="small" role="status">Loading game code…</p><span id="device" class="badge">Checking device…</span>
+        </section>
+      </aside>
+    </div>
+    <details id="lab" class="lab"><summary>Generation images, collision shapes and performance</summary>
+    <section class="previews" aria-label="Generation results">
+      <figure><figcaption><span>01 / ORIGINAL</span><span>512 × 512</span></figcaption><div class="canvas-wrap"><canvas id="original" width="512" height="512" aria-label="Generated image"></canvas><p class="placeholder" id="original-placeholder">Your word becomes an image here.</p></div></figure>
+      <figure><figcaption><span>02 / TRANSPARENT OBJECT</span><a id="save" download="object.png" hidden>Save PNG ↓</a></figcaption><div class="canvas-wrap checker"><canvas id="cutout" width="512" height="512" aria-label="Image with its background removed"></canvas><p class="placeholder" id="cutout-placeholder">Then we keep just the object.</p></div></figure>
+    </section>
+    <section id="collision-test" class="collision-section" aria-labelledby="collision-heading">
+      <div class="collision-controls">
+        <p class="eyebrow">03 / COLLISION SHAPE</p>
+        <h2 id="collision-heading">Give the object an edge.</h2>
+        <p class="small">Generated objects get a collision outline automatically. You can also inspect a transparent PNG here. Colored regions are convex pieces for one rigid body.</p>
+        <label class="file-label" for="shape-file">Open a transparent PNG</label><input id="shape-file" type="file" accept="image/png">
+        <label class="check-label"><input id="show-parts" type="checkbox" checked> Show convex pieces</label>
+        <p id="shape-stats" role="status" class="shape-stats">Waiting for an object.</p>
+        <p id="shape-note" class="small"></p>
+        <a id="shape-save" class="secondary download" hidden>Save collision JSON</a>
+      </div>
+      <figure><figcaption><span>OUTLINE + CONVEX PIECES</span><span>512 × 512</span></figcaption><div class="canvas-wrap checker"><canvas id="collision" width="512" height="512" aria-label="Object silhouette with collision outline and convex pieces"></canvas></div></figure>
+    </section>
+    <section class="measurements">
+      <div><p class="eyebrow">04 / WHAT THIS DEVICE CAN DO</p><h2>Measured, not guessed.</h2><p class="small">Setup loads and warms the models once. They stay ready for later objects. Temporary GPU buffers are released after each run. The generation timer includes the transparent PNG and collision polygons.</p><a id="report" class="secondary download" hidden>Save benchmark JSON</a></div>
+      <dl id="metrics"><div><dt>Model payload</dt><dd id="payload">—</dd></div><div><dt>One-time setup</dt><dd id="setup-time">—</dd></div><div><dt>Loading this object</dt><dd id="load-time">—</dd></div><div><dt>Text conditioning</dt><dd id="text-time">—</dd></div><div><dt id="dit-label">Denoising</dt><dd id="dit-time">—</dd></div><div><dt>VAE decode</dt><dd id="vae-time">—</dd></div><div><dt>Background removal</dt><dd id="background-time">—</dd></div><div><dt>Collision polygons</dt><dd id="polygon-time">—</dd></div><div><dt>Total elapsed</dt><dd id="total-time">—</dd></div><div><dt>Sampled JS heap peak</dt><dd id="heap">Unavailable</dd></div></dl>
+    </section>
+    <details><summary>Device details and run log</summary><p><a href="background-test.html">Run the isolated background speed test</a> · Local development files required</p><pre id="log"></pre></details>
+    </details>
+    <footer><p>Runs on this device · No uploads</p><p>Local prototype · <a href="https://github.com/Amshaker/Mobile-O" target="_blank" rel="noreferrer">Mobile-O credits and non-commercial license</a></p></footer>
+  </main>
+  <dialog id="loading-screen" aria-labelledby="loading-title" aria-describedby="loading-note">
+    <p class="eyebrow">TRICKY WORDS</p><h2 id="loading-title">Loading the AI</h2>
+    <p id="loading-note">One-time setup. Keep this tab open while the models get ready.</p>
+    <ol id="loading-stages" class="loading-stages" role="list" aria-label="Object generation stages" hidden>
+      <li data-stage="text"><span class="stage-ball" aria-hidden="true">1</span><span class="stage-label">Read word</span></li>
+      <li data-stage="dit"><span class="stage-ball" aria-hidden="true">2</span><span class="stage-label">Draw</span></li>
+      <li data-stage="vae"><span class="stage-ball" aria-hidden="true">3</span><span class="stage-label">Make image</span></li>
+      <li data-stage="background"><span class="stage-ball" aria-hidden="true">4</span><span class="stage-label">Cut out</span></li>
+      <li data-stage="polygon"><span class="stage-ball" aria-hidden="true">5</span><span class="stage-label">Add physics</span></li>
+    </ol>
+    <p id="loading-stage-count" class="loading-stage-count" hidden></p>
+    <div class="status-row"><p id="status" role="status" aria-live="polite">Loading game code…</p><span id="elapsed" aria-live="off"></span></div>
+    <progress id="progress" max="1" value="0" aria-label="Generation progress"></progress>
+    <button id="stop" type="button" class="secondary" hidden>Stop generation</button>
+  </dialog>
+  <script src="runtime/matter.min.js"></script>
+  <script type="module" src="startup.mjs"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "file": "background-compact-cpu-v2.onnx",
+  "bytes": 14614474,
+  "padding_implementation": "FP32 padding and surrounding tensors",
+  "source": "studioludens/birefnet-lite-512",
+  "license": "MIT",
+  "revision": "962e67969ec6acec9c19fab76acee4f5e22e990c",
+  "precision": "FP32 weights and activations",
+  "precisionChecks": [
+    {
+      "sample": "slipper",
+      "maskIntersectionOverUnion": 1.0,
+      "meanAbsoluteAlphaError": 1.585627842359827e-06
+    },
+    {
+      "sample": "teapot",
+      "maskIntersectionOverUnion": 0.9999841581648818,
+      "meanAbsoluteAlphaError": 2.9936079499748303e-06
+    },
+    {
+      "sample": "orange",
+      "maskIntersectionOverUnion": 0.9999874794976774,
+      "meanAbsoluteAlphaError": 1.7501373577033519e-06
+    }
+  ],
+  "originalFile": "background-birefnet-f32-v1.onnx",
+  "externalData": [
+    {
+      "file": "background-compact-cpu-v2.data",
+      "bytes": 178451752
+    }
+  ]
+}

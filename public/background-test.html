@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Background speed test · Tricky Words</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header><span class="eyebrow">TRICKY WORDS / PERFORMANCE TEST</span><a href="./">Back to the demo</a></header>
+    <section class="intro">
+      <h1>Background speed test.</h1>
+      <p class="description">This loads only the background remover, warms it once, then measures three runs on the same saved slipper image.</p>
+      <p class="small">For an isolated measurement, refresh or close every main demo tab first to unload its models. Keep this page visible during the test. The test releases its model when finished.</p>
+      <button id="run" type="button">Run background test</button>
+      <a id="save-diagnostic" class="secondary download" hidden>Save diagnostic JSON</a>
+    </section>
+    <p id="diagnostic-status" role="status" aria-live="polite">Ready. No models loaded.</p>
+    <section class="measurements">
+      <div><h2>Inference only.</h2><p class="small">Run times include model inference and downloading its output mask. Image preparation and PNG encoding are outside these times. The warmup is measured separately.</p><div class="canvas-wrap checker"><canvas id="diagnostic-image" width="512" height="512" aria-label="Cutout produced by the background test"></canvas></div></div>
+      <dl><div><dt>Model loading and compilation</dt><dd id="diagnostic-load">—</dd></div><div><dt>Warmup</dt><dd id="diagnostic-warmup">—</dd></div><div><dt>Run 1</dt><dd id="diagnostic-run-1">—</dd></div><div><dt>Run 2</dt><dd id="diagnostic-run-2">—</dd></div><div><dt>Run 3</dt><dd id="diagnostic-run-3">—</dd></div></dl>
+    </section>
+    <details open><summary>Device details and test log</summary><pre id="diagnostic-log"></pre></details>
+    <footer>Local test · No uploads · Runtime and model filenames are recorded in the test log</footer>
+  </main>
+  <script type="module" src="background-test.mjs"></script>
+</body>
+</html>

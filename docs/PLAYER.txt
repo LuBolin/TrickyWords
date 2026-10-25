@@ -1,0 +1,48 @@
+TRICKY WORDS - EARLY PREVIEW
+
+Name an object. Let the AI draw it. Balance it on a growing tower.
+
+PLAY
+1. Extract the complete ZIP. Keep all files together.
+2. Open index.html in a browser with WebGPU and shader-f16 support.
+3. Choose the included models folder, then click Load AI models.
+4. Wait for setup. Type an Object word and click Make object beside it.
+
+Keep index.html, game.js and the three engine-*.js files together.
+Choose the model folder again after refreshing or reopening the game.
+The original Hugging Face checkpoints cannot replace the supplied ONNX files.
+
+CONTROLS
+Mouse: move over the playfield to aim, scroll to rotate, left click to drop.
+Keyboard: A/D move, Q/E rotate, S or Space drops. Arrow keys also work.
+P or Escape pauses. On-screen controls are available too.
+One word and no repeats are enabled by default; both rules can be switched off.
+Use Show collision shapes to see the physics fixtures.
+
+GENERATION
+The tower pauses while AI works. The progress panel shows all five stages,
+the current diffusion step, elapsed time and a Stop button. First setup is
+slower than later generations. Closing the game tab ends its browser work.
+The player package starts no local server and performs no image or word uploads.
+No Python, Node.js, command window or native launcher is included.
+
+COMPATIBILITY
+This is experimental. Windows Chromium has been tested over local HTTP.
+Direct double-click opening, macOS and the final Firefox package are unverified.
+WebGPU and shader-f16 are required. A 16 GB RAM computer with a recent GPU is
+the intended target, not a verified minimum. Integrated graphics and 8 GB RAM
+machines have not been validated. Model file size is not runtime memory use.
+There is no fixed generation-time guarantee. AI and collision tracing can fail.
+
+CREDITS AND TERMS
+Image generation uses Mobile-O by Abdelrahman Shaker and collaborators.
+Mobile-O materials and the converted models retain CC BY-NC-SA 4.0.
+Commercial use requires the authors' permission under their stated terms.
+Read THIRD_PARTY.md and every included license before redistributing the pack.
+BiRefNet, ONNX Runtime Web, Tokenizers.js and Matter.js retain their own licenses.
+
+Source, documentation, updates and issues:
+https://github.com/LuBolin/TrickyWords
+
+Diagnostics can include the generated word, seed and device information.
+Inspect a saved report before posting it publicly.
