@@ -29,14 +29,40 @@ class ModelExportTests(unittest.TestCase):
                 graph = onnx.load(path, load_external_data=False)
                 self.assertTrue(any(t.data_location == onnx.TensorProto.EXTERNAL for t in graph.graph.initializer))
                 if name in ['text', 'dit', 'vae']:
+                    self.assertEqual(info['bits'], 8)
                     self.assertGreaterEqual(sum(n.op_type == 'MatMulNBits' for n in graph.graph.node), 50 if name == 'vae' else 100)
+                    for node in graph.graph.node:
+                        if node.op_type in ('MatMulNBits', 'GatherBlockQuantized'):
+                            self.assertEqual(next(a.i for a in node.attribute if a.name == 'bits'), 8)
                 if name in ['dit', 'vae']:
                     shape = [d.dim_value for d in graph.graph.input[0].type.tensor_type.shape.dim]
                     self.assertEqual(shape, manifest['latent_shape'])
                 if name == 'vae':
                     self.assertEqual(len(info['reconstructionChecks']), 3)
-                    self.assertTrue(all(c['meanAbsolutePixelError'] < .02 and c['psnrDb'] > 30 for c in info['reconstructionChecks']))
-        self.assertLess(total, 900_000_000, 'The four native compact models must stay under 900 MB.')
+                    self.assertTrue(all(c['meanAbsolutePixelErrorUpperBound'] < .02 and c['psnrDbLowerBound'] > 30 for c in info['reconstructionChecks']))
+        self.assertLess(total, 1_500_000_000, 'The four native 8-bit models must stay under 1.5 GB.')
+
+    def test_eight_bit_embedding_preserves_signs_zero_rows_and_indices(self):
+        from scripts.export_compact import embedding_nodes
+
+        values = np.random.default_rng(42).normal(size=(8, 64)).astype('float32')
+        values[0] = 0
+        values[1, :2] = [-8, 8]
+        graph = onnx.helper.make_graph([onnx.helper.make_node('Gather', ['weight', 'ids'], ['output'], axis=0)],
+            'embedding', [onnx.helper.make_tensor_value_info('ids', onnx.TensorProto.INT64, [4])],
+            [onnx.helper.make_tensor_value_info('output', onnx.TensorProto.FLOAT, [4, 64])],
+            [onnx.numpy_helper.from_array(values, 'weight')])
+        model = onnx.helper.make_model(graph, opset_imports=[onnx.helper.make_opsetid('', 21),
+                                      onnx.helper.make_opsetid('com.microsoft', 1)], ir_version=10)
+        self.assertEqual(embedding_nodes(model), 1)
+        onnx.checker.check_model(model)
+        ids = np.array([0, 1, 7, 1], dtype=np.int64)
+        result = ort.InferenceSession(model.SerializeToString()).run(None, {'ids': ids})[0]
+        np.testing.assert_array_equal(result[0], np.zeros(64))
+        np.testing.assert_array_equal(result[1], result[3])
+        np.testing.assert_allclose(result, values[ids], atol=.065, rtol=0)
+        self.assertLess(result[1, 0], 0)
+        self.assertGreater(result[1, 1], 0)
 
     def test_pointwise_lowering_preserves_convolution_and_bias(self):
         from scripts.export_compact import lower_pointwise

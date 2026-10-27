@@ -30,5 +30,6 @@ with ZipFile(temporary, 'w', ZIP_DEFLATED, compresslevel=1) as archive:
 with ZipFile(temporary) as archive:
     assert archive.testzip() is None, 'ZIP integrity check failed.'
     assert set(archive.namelist()) == {name for _, name in sources}
+assert temporary.stat().st_size < 2 * 1024**3, 'The download exceeds the GitHub Releases per-asset limit.'
 temporary.replace(output)
 print(f'Created {output}: {output.stat().st_size / 1e9:.3f} GB, {len(sources)} files. ZIP integrity passed.')

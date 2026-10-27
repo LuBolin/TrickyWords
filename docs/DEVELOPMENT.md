@@ -40,19 +40,19 @@ The isolated `background-test.html` diagnostic reads server-hosted model files a
 The folder picker requires the graph/data pairs referenced by the committed manifests:
 
 ```text
-text-compact-v2.onnx
-text-compact-v2.data
-dit-compact-v2.onnx
-dit-compact-v2.data
-vae-q4-compact-v1.onnx
-vae-q4-compact-v1.data
+text-q8.onnx
+text-q8.data
+dit-q8.onnx
+dit-q8.data
+vae-q8.onnx
+vae-q8.data
 background-compact-v2.onnx
 background-compact-v2.data
 background-compact-cpu-v2.onnx
 background-compact-cpu-v2.data
 ```
 
-These files total about 1.075 GB. The active native model set is about 0.881 GB; the CPU background fallback makes the active set about 0.976 GB. These are file sizes, not runtime memory estimates. The picker checks filenames, duplicates and byte sizes. File-size validation is not cryptographic verification.
+These files total about 1.677 GB. The active native model set is about 1.484 GB; the CPU background fallback makes the active set about 1.578 GB. These are file sizes, not runtime memory estimates. The picker checks filenames, duplicates and byte sizes. File-size validation is not cryptographic verification. The 8-bit manifests require the matching 8-bit pack; an older 4-bit folder is rejected.
 
 The original Hugging Face PyTorch/safetensors checkpoint cannot replace this ONNX pack. The manifests and tokenizer are application assets, so selecting a folder cannot override the model configuration.
 
@@ -65,7 +65,7 @@ npm run build-download
 python scripts/package-download.py
 ```
 
-The output is `dist/TrickyWords/` and `dist/TrickyWords.zip`. The ZIP adds the model weights and bundled notices to the built game. Packaging checks model byte sizes, the expected file list and ZIP CRCs before replacing the archive.
+The output is `dist/TrickyWords/` and `dist/TrickyWords.zip`. The ZIP adds the model weights and bundled notices to the built game. Packaging checks model byte sizes, the expected file list, ZIP CRCs and the GitHub Releases 2 GiB asset limit before replacing the archive.
 
 The HTML inlines its styles and starts feedback before loading four classic JavaScript files. Those files embed manifests, tokenizer data, calibration assets, runtime modules and WASM. Modules, workers and WASM use in-memory Blob URLs. The content security policy blocks HTTP fetches during player initialization and inference. External model data stays in user-selected File/Blob objects to avoid copying the entire pack into JavaScript arrays.
 
@@ -95,7 +95,9 @@ python scripts/export_compact.py
 python -m unittest discover -s tests -p 'test_model_exports.py'
 ```
 
-The pipeline exports actual Mobile-O text conditioning, diffusion and VAE decoder weights. It rewrites diffusion Clip operations as equivalent Max/Min nodes and promotes affected background Pad operations to FP32 for browser shader compatibility. Compact conversion quantizes eligible constant matrix and embedding weights to INT4, lowers eligible pointwise convolutions to matrices, and stores large tensors in external `.data` files. Generation remains at 512 × 512, eight diffusion steps and guidance 1.5.
+The pipeline exports actual Mobile-O text conditioning, diffusion and VAE decoder weights. It rewrites diffusion Clip operations as equivalent Max/Min nodes and promotes affected background Pad operations to FP32 for browser shader compatibility. Compact conversion quantizes eligible constant matrix and embedding weights to INT8 in blocks of 32, lowers eligible pointwise convolutions to matrices, and stores large tensors in external `.data` files. Embeddings use unsigned storage with midpoint 128 to represent signed INT8 values. Remaining weights and activations retain FP16, with original FP32 attention. Generation remains at 512 × 512, eight diffusion steps and guidance 1.5.
+
+Decoder checks require an upper bound below 0.02 for mean absolute pixel error against FP16 and a PSNR lower bound above 30 dB at latent scales 0.2, 1 and 2. Fresh exports compare directly with FP16. The retained release weights use conservative triangle-inequality bounds from their measured differences against the previously validated 4-bit decoder. The manifest records that method, reference hashes and original FP16 checks. These bounds preserve the same accuracy thresholds without claiming a new direct FP16 comparison.
 
 The Python suite needs intermediate original exports as well as compact files. It cannot run from the ten-file player pack alone. Some profiling scripts are Windows-specific and require additional tools such as `psutil`; they are not part of the player flow or normal CI.
 
@@ -105,8 +107,8 @@ After changing model assets, rerun both test suites and browser generation check
 
 The JavaScript suite covers word validation and history, tokenization parity, scheduling, model selection and loading, cancellation, calibration worker cleanup, masks, polygon geometry, stacking, mouse targets, startup feedback and stage state.
 
-Real Windows Chromium checks have covered setup, generated pieces, Stop, mouse aiming and wheel rotation, A/D/Q/E, click/S/Space drop, typing without triggering game keys, and stage completion/reset. UI captures have been inspected in a 390-pixel layout fixture. These checks do not establish support for integrated GPUs, 8 GB RAM machines, every browser or direct-file origins.
+Real Windows Chromium checks have covered setup, generated pieces, Stop, mouse aiming and wheel rotation, A/D/Q/E, click/S/Space drop, typing without triggering game keys, and stage completion/reset. UI captures have been inspected in a 390-pixel layout fixture. The retained 8-bit weights also passed 18 RTX 4060 and six Intel UHD generation runs, including cutouts and collision polygons. See [benchmarks](BENCHMARKS.md). These checks do not establish support for every integrated GPU, 16 GB or 8 GB physical configurations, every browser or direct-file origins.
 
-Keep checkpoints, weights, generated runtimes, local reports and ZIPs out of Git. Commit the source, manifests/tokenizer, tests, docs and notices. Attach the complete ZIP and SHA-256 checksum file to GitHub Releases. The early preview is tagged `v0.1.0-alpha.1` and marked as a prerelease.
+Keep checkpoints, weights, generated runtimes, local reports and ZIPs out of Git. Commit the source, manifests/tokenizer, tests, docs and notices. Attach the complete ZIP and SHA-256 checksum file to GitHub Releases. The 8-bit preview is tagged `v0.1.0-alpha.2` and marked as a prerelease. It replaces the earlier 4-bit player download.
 
 Retain [THIRD_PARTY.md](../THIRD_PARTY.md) and all copied licenses. Mobile-O adaptations are distributed under CC BY-NC-SA 4.0; publishing this source does not grant commercial model-use permission.

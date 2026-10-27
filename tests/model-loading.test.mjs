@@ -1,6 +1,26 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { modelBytes, downloadModel, selectModelFiles } from '../public/model-loading.mjs';
+
+test('release manifests select eight-bit weights within the download budget', () => {
+  const read = name => JSON.parse(readFileSync(new URL(`../public/models/${name}`, import.meta.url), 'utf8'));
+  const manifest = read('manifest.json');
+  assert.deepEqual(manifest, read('manifest-compact.json'));
+  for (const name of ['text', 'dit', 'vae']) {
+    assert.equal(manifest.models[name].bits, 8);
+    assert.equal(manifest.models[name].file, `${name}-q8.onnx`);
+  }
+  const files = new Map();
+  for (const model of [...Object.values(manifest.models), read('background-fp32-test.json')]) {
+    for (const part of [model, ...model.externalData]) {
+      assert.ok(Number.isSafeInteger(part.bytes) && part.bytes > 0);
+      files.set(part.file, part.bytes);
+    }
+  }
+  assert.equal(files.size, 10);
+  assert.ok([...files.values()].reduce((a, b) => a + b, 0) < 1_700_000_000);
+});
 
 test('model loader counts and checks both graph and external weights', async t => {
   const model = { file: 'graph.onnx', bytes: 2, externalData: [{ file: 'weights.data', bytes: 3 }] };

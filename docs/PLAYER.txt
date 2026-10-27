@@ -10,6 +10,8 @@ PLAY
 
 Keep index.html, game.js and the three engine-*.js files together.
 Choose the model folder again after refreshing or reopening the game.
+This release uses the 8-bit model pack, about 1.677 GB after extraction.
+Replace the complete game folder when upgrading from the 4-bit preview.
 The original Hugging Face checkpoints cannot replace the supplied ONNX files.
 
 CONTROLS
@@ -30,8 +32,10 @@ COMPATIBILITY
 This is experimental. Windows Chromium has been tested over local HTTP.
 Direct double-click opening, macOS and the final Firefox package are unverified.
 WebGPU and shader-f16 are required. A 16 GB RAM computer with a recent GPU is
-the intended target, not a verified minimum. Integrated graphics and 8 GB RAM
-machines have not been validated. Model file size is not runtime memory use.
+the intended target, not a verified minimum. RTX 4060 and Intel UHD generation
+have been tested on a computer with 64 GB RAM. Physical 16 GB and 8 GB machines
+remain untested. Median generation was about 4.27 seconds on RTX 4060 and
+34.81 seconds on Intel UHD. Model file size is not runtime memory use.
 There is no fixed generation-time guarantee. AI and collision tracing can fail.
 
 CREDITS AND TERMS

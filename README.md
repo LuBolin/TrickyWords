@@ -4,7 +4,7 @@ Name an object, let the AI draw it, then balance it on a growing tower. Each pie
 
 The game and AI inference run locally through the browser. There is no inference API, account, paid service or upload of player words and images.
 
-[Download the early preview](https://github.com/LuBolin/TrickyWords/releases/tag/v0.1.0-alpha.1) · [Developer guide](docs/DEVELOPMENT.md) · [Credits and model licenses](THIRD_PARTY.md)
+[Download the 8-bit preview](https://github.com/LuBolin/TrickyWords/releases/tag/v0.1.0-alpha.2) · [Developer guide](docs/DEVELOPMENT.md) · [Benchmarks](docs/BENCHMARKS.md) · [Credits and model licenses](THIRD_PARTY.md)
 
 ![The portrait playfield with an AI-generated hammer ready to drop](docs/images/gameplay.png)
 
@@ -12,7 +12,7 @@ The game and AI inference run locally through the browser. There is no inference
 
 This is an **experimental preview**. The self-contained package has passed Windows Chromium tests over local HTTP. Direct double-click opening, macOS and the final Firefox package have not yet been verified. Treat the download as a preview for testing.
 
-1. Open the [release page](https://github.com/LuBolin/TrickyWords/releases/tag/v0.1.0-alpha.1) and download **TrickyWords.zip**. GitHub's automatically generated **Source code** archives do not contain the prepared game or model weights.
+1. Open the [release page](https://github.com/LuBolin/TrickyWords/releases/tag/v0.1.0-alpha.2) and download **TrickyWords.zip**. GitHub's automatically generated **Source code** archives do not contain the prepared game or model weights.
 2. Extract the whole ZIP. Keep its files together.
 3. Open **TrickyWords/index.html** in a browser with WebGPU and `shader-f16` support.
 4. Choose the included **models** folder, then click **Load AI models**. First setup checks the browser, selects a background-removal runtime, loads the models and warms them.
@@ -20,7 +20,7 @@ This is an **experimental preview**. The self-contained package has passed Windo
 
 The player package contains HTML, four JavaScript files, model files and license notices. Its browser-only launch is designed to need no installer, command window, Python, Node.js or local server. Files stay on the device. Choose the model folder again after refreshing or reopening the page; browsers do not silently grant access to neighboring model files.
 
-The ZIP is about **923 MB**, with about **1.075 GB** of model files after extraction. The repository keeps weights out of Git history; the complete player download lives in GitHub Releases. A `SHA256SUMS.txt` file accompanies the release for optional integrity checks.
+The download uses **8-bit constant matrix and embedding weights**, with FP16 remaining weights and activations and original FP32 attention. The ZIP is **1.509 GB**, with **1.677 GB** of model files after extraction. It fits in one GitHub Release asset. The repository keeps weights out of Git history; GitHub supplies the complete player download, with no separate model host. A `SHA256SUMS.txt` file accompanies the release for optional integrity checks. Replace the complete game folder when upgrading from the earlier 4-bit preview.
 
 ## Controls
 
@@ -48,9 +48,9 @@ Toggle **Show collision shapes** to see the actual physics fixtures. Expand **Ge
 ## Device requirements and known limits
 
 - A desktop browser exposing **WebGPU** and **`shader-f16`** is required. Chrome and Edge are the main development targets. Hardware acceleration must be available.
-- **16 GB of system RAM and a recent GPU** are the intended target, not a verified minimum. Recent integrated graphics, 8 GB RAM laptops and arbitrary visitor hardware have not been validated. Shared GPU memory uses system RAM.
+- **16 GB of system RAM and a recent GPU** are the intended target, not a verified minimum. The 8-bit pack has completed generation and collision tracing on an RTX 4060 Laptop GPU and Intel UHD Graphics. Both GPUs were tested in a computer with 64 GB RAM; physical 16 GB and 8 GB configurations remain untested. Shared GPU memory uses system RAM.
 - Model file size is not the runtime memory requirement. Setup needs additional CPU and GPU memory. Other GPU applications can affect speed and available memory.
-- The release uses 512 × 512 generation with eight diffusion steps. Setup takes substantially longer than generating later pieces. Speed varies by browser, hardware and load; there is no five-second guarantee.
+- The release uses 512 × 512 generation with eight diffusion steps. Measured median object times were **4.27 seconds on RTX 4060** and **34.81 seconds on Intel UHD**. These are observations from one computer, not guarantees. Setup takes substantially longer than generating later pieces. See [benchmark methods and limits](docs/BENCHMARKS.md).
 - AI can draw the wrong object, multiple objects or a poor side view. Background removal and collision tracing can fail. Collision shapes keep the largest connected silhouette and fill enclosed holes, so visible openings are not always physical openings.
 - This is a single-player stacking prototype. It has no multiplayer or remote generation service.
 
@@ -68,7 +68,7 @@ npm run prepare-runtime
 
 After copying the prepared release weights into `public/models/`, developers can use `python server.py` for the source preview, or `npm run build-download` and `python scripts/package-download.py` to rebuild the download. The optional development server only serves static files on `127.0.0.1:8765`; AI work stays in the browser. Stop it with **Ctrl+C**.
 
-See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the model file list, export steps, build layout and verification limits. The JavaScript suite currently has **40 tests**. Heavy model checks are separate and require local model exports and Python dependencies.
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for the model file list, export steps, build layout and verification limits. The JavaScript suite currently has **41 tests**. Heavy model checks are separate and require local model exports and Python dependencies.
 
 ## Credits and licensing
 

@@ -10,7 +10,7 @@
 
 Keep original license and attribution notices with redistributed models and libraries. Nothing in this distribution grants commercial model-use permission or claims endorsement by upstream authors. Original Tricky Words application code has no separate reuse license selected; see `LICENSE.md` in the source repository.
 
-The browser conversion quantizes Mobile-O's constant text, diffusion and decoder matrix weights to INT4, rewrites eligible pointwise convolutions as matrices, and stores large weights in external data files. It also batches classifier-free guidance, replaces diffusion Clip nodes with Max/Min and promotes affected BiRefNet padding operations to FP32. Generation remains at 512px with eight diffusion steps and guidance 1.5. These modifications do not change the upstream license or imply endorsement by the authors. The upstream license includes its disclaimer of warranties; retain the complete license texts supplied with the package.
+The browser conversion quantizes Mobile-O's constant text, diffusion and decoder matrix and embedding weights to INT8, rewrites eligible pointwise convolutions as matrices, and stores large weights in external data files. Remaining weights and activations retain FP16, with original FP32 attention. It also batches classifier-free guidance, replaces diffusion Clip nodes with Max/Min and promotes affected BiRefNet padding operations to FP32. Generation remains at 512px with eight diffusion steps and guidance 1.5. These modifications do not change the upstream license or imply endorsement by the authors. The upstream license includes its disclaimer of warranties; retain the complete license texts supplied with the package.
 
 ## Mobile-O citation
 

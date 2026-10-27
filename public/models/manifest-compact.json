@@ -4,12 +4,13 @@
       "originalFile": "text.onnx",
       "quantizedOperators": 175,
       "blockSize": 32,
-      "file": "text-compact-v2.onnx",
-      "bytes": 1483169,
+      "bits": 8,
+      "file": "text-q8.onnx",
+      "bytes": 1479846,
       "externalData": [
         {
-          "file": "text-compact-v2.data",
-          "bytes": 283789304
+          "file": "text-q8.data",
+          "bytes": 535837780
         }
       ]
     },
@@ -17,12 +18,13 @@
       "originalFile": "dit-cfg-minmax.onnx",
       "quantizedOperators": 284,
       "blockSize": 32,
-      "file": "dit-compact-v2.onnx",
-      "bytes": 2021589,
+      "bits": 8,
+      "file": "dit-q8.onnx",
+      "bytes": 2015181,
       "externalData": [
         {
-          "file": "dit-compact-v2.data",
-          "bytes": 349719552
+          "file": "dit-q8.data",
+          "bytes": 639728640
         }
       ]
     },
@@ -45,36 +47,66 @@
       "originalFile": "vae.onnx",
       "quantizedOperators": 54,
       "blockSize": 32,
-      "file": "vae-q4-compact-v1.onnx",
-      "bytes": 436220,
+      "bits": 8,
+      "file": "vae-q8.onnx",
+      "bytes": 433700,
       "externalData": [
         {
-          "file": "vae-q4-compact-v1.data",
-          "bytes": 145472256
+          "file": "vae-q8.data",
+          "bytes": 205634304
         }
       ],
       "reconstructionChecks": [
         {
           "scale": 0.2,
-          "meanAbsolutePixelError": 0.0045670573599636555,
-          "psnrDb": 43.80862808227539
+          "meanAbsolutePixelErrorUpperBound": 0.009169369353458023,
+          "psnrDbLowerBound": 37.7578847051529,
+          "meanAbsoluteDifferenceFromReference": 0.004602311993494368,
+          "rmsDifferenceFromReference": 0.006494978680666947
         },
         {
           "scale": 1,
-          "meanAbsolutePixelError": 0.006430492270737886,
-          "psnrDb": 40.00187301635742
+          "meanAbsolutePixelErrorUpperBound": 0.012856176857326318,
+          "psnrDbLowerBound": 33.9789393727887,
+          "meanAbsoluteDifferenceFromReference": 0.0064256845865884316,
+          "rmsDifferenceFromReference": 0.010003217018453523
         },
         {
           "scale": 2,
-          "meanAbsolutePixelError": 0.004574492108076811,
-          "psnrDb": 42.37965393066406
+          "meanAbsolutePixelErrorUpperBound": 0.009128116940739044,
+          "psnrDbLowerBound": 36.36943020022626,
+          "meanAbsoluteDifferenceFromReference": 0.004553624832662233,
+          "rmsDifferenceFromReference": 0.007585410083924948
         }
-      ]
+      ],
+      "reconstructionCheckMethod": "Triangle-inequality bounds against FP16 via the validated 4-bit decoder. CPU comparisons use NumPy seed 42 at each listed scale. Values are conservative bounds, not direct FP16 error measurements.",
+      "reconstructionReference": {
+        "file": "vae-q4-compact-v1.onnx",
+        "sha256": "5dab88f90e84911cffbc3cfeeed77a8fe878f542905cc6aef5eb3b098b2769da",
+        "dataSha256": "a12deda5688d6fd5321f94ad49611eea2048f2ce45ec311894864bc8a7c1af52",
+        "fp16Checks": [
+          {
+            "scale": 0.2,
+            "meanAbsolutePixelError": 0.0045670573599636555,
+            "psnrDb": 43.80862808227539
+          },
+          {
+            "scale": 1,
+            "meanAbsolutePixelError": 0.006430492270737886,
+            "psnrDb": 40.00187301635742
+          },
+          {
+            "scale": 2,
+            "meanAbsolutePixelError": 0.004574492108076811,
+            "psnrDb": 42.37965393066406
+          }
+        ]
+      }
     }
   },
   "model": "Amshaker/Mobile-O-0.5B",
   "source_revision": "92b5ef6a90a770c631153c3c32be0bbe049e2a8d",
-  "precision": "INT4 constant matrix/embedding weights in text, diffusion and decoder; FP16 remaining weights and activations; original FP32 attention",
+  "precision": "INT8 constant matrix and embedding weights; FP16 remaining weights and activations; original FP32 attention",
   "scheduler": {
     "timesteps": [
       999,
